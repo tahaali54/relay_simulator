@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:relay_simulator/home_page.dart';
+import 'package:relay_simulator/baby_names_page.dart';
 
 void main() => runApp(RelaySim());
 
@@ -11,7 +11,7 @@ class RelaySim extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Relay Simulator",
-      home: HomePage(),
+      home: BabyNamesPage(),
       routes: {
         //Routes.qr: (context) => new QrScanPage(),
       },

@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-final dummySnapshot = [
-  {"name": "Filip", "votes": 15},
-  {"name": "Abraham", "votes": 14},
-  {"name": "Richard", "votes": 11},
-  {"name": "Ike", "votes": 10},
-  {"name": "Justin", "votes": 1},
-];
-
-class HomePage extends StatefulWidget {
+class BabyNamesPage extends StatefulWidget {
   @override
-  _HomePageState createState() {
-    return new _HomePageState();
+  _BabyNamesPageState createState() {
+    return new _BabyNamesPageState();
   }
 }
 
-class _HomePageState extends State<HomePage> {
+class _BabyNamesPageState extends State<BabyNamesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Relay Simulator')),
+      appBar: AppBar(title: Text('Baby Names')),
       body: _buildBody(context),
     );
   }
@@ -38,7 +30,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
-      padding: const EdgeInsets.only(top: 20.0),
+      padding: const EdgeInsets.only(top: 16.0),
       children: snapshot.map((data) => _buildListItem(context, data)).toList(),
     );
   }
@@ -63,9 +55,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-//For some reason this method just keeps on incrementing the data
   _updateVote(Record record) {
-    record.reference.updateData({'votes': record.votes + 1});
+    Firestore.instance.runTransaction((transaction) async {
+      final freshSnapshot = await transaction.get(record.reference);
+      final fresh = Record.fromSnapshot(freshSnapshot);
+
+      await transaction.update(record.reference, {'votes': fresh.votes + 1});
+    });
     print(record);
   }
 }
