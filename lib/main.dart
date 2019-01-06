@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:relay_simulator/baby_names_page.dart';
+import 'package:relay_simulator/global.dart';
+import 'package:relay_simulator/home_page.dart';
 
 void main() => runApp(RelaySim());
 
 class RelaySim extends StatelessWidget {
-  final Color _primaryColor = Color.fromARGB(255, 198, 40, 40);
-  final Color _accentColor = Color.fromARGB(255, 142, 0, 0);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Relay Simulator",
-      home: BabyNamesPage(),
       routes: {
-        //Routes.qr: (context) => new QrScanPage(),
+        '/': (_) => HomePage(),
+        '/widget': (_) => WebviewScaffold(
+              url: 'https://k163061-thesis2-node.azurewebsites.net/',
+              appBar: AppBar(
+                title: const Text('Upload to cloud server'),
+              ),
+              withZoom: true,
+              withLocalStorage: true,
+            )
       },
       theme: ThemeData(
-          primaryColor: _primaryColor,
-          accentColor: _accentColor,
-          buttonColor: _primaryColor,
+          primaryColor: ThemeColors.primaryColor,
+          accentColor: ThemeColors.accentColor,
+          buttonColor: ThemeColors.primaryColor,
           inputDecorationTheme:
               InputDecorationTheme(border: OutlineInputBorder())),
     );
