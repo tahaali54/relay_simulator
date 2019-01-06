@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:relay_simulator/documents_page.dart';
 import 'package:relay_simulator/global.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
@@ -38,6 +39,7 @@ class _HomePageState extends State<HomePage> {
           if (_documentCount != snapshot.data.documents.length) {
             _documentCount = snapshot.data.documents.length;
             _showSnackBar(context);
+            _calcTime(context, snapshot.data.documents.last);
           }
         }
 
@@ -55,9 +57,9 @@ class _HomePageState extends State<HomePage> {
                       color: ThemeColors.primaryColor,
                     ),
                     title: Text('Received documents'),
-                    trailing: Container(
-                      width: 18.0,
-                      height: 18.0,
+                    trailing: Container(alignment: Alignment.center,
+                      width: _documentCount > 9 ? 24.0 : 18.0,
+                      height: _documentCount > 9 ? 24.0 : 18.0,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(color: _iconTextColor),
@@ -72,6 +74,8 @@ class _HomePageState extends State<HomePage> {
                       setState(() {
                         _iconTextColor = Colors.grey;
                       });
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => DocumentsPage()));
                     }),
               ),
             ),
@@ -86,11 +90,7 @@ class _HomePageState extends State<HomePage> {
                       color: ThemeColors.primaryColor,
                     ),
                     title: Text('Statistics'),
-                    onTap: () {
-                      setState(() {
-                        _iconTextColor = Colors.grey;
-                      });
-                    }),
+                    onTap: () {}),
               ),
             ),
             //Card no.3 upload to cloud.
@@ -116,8 +116,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _showSnackBar(BuildContext context) async {
-      _iconTextColor = ThemeColors.primaryColor;
+    _iconTextColor = ThemeColors.primaryColor;
     Scaffold.of(context)
         .showSnackBar(SnackBar(content: Text('New document received.')));
+  }
+
+  Future<void> _calcTime(BuildContext context, DocumentSnapshot data) async {
+    String dateString = data['text'].split("time:").last.trim();
+    DateTime generationDate =
+        DateTime.parse(dateString.substring(0, dateString.length - 1));
+    DateTime receivedDate = DateTime.now();
+    var latency = receivedDate.difference(generationDate).inMilliseconds;
+
+    Firestore.instance.runTransaction((transaction) async {
+      await transaction.update(data.reference, {
+        'generationDate': generationDate.toString(),
+        'receivedDate': receivedDate.toString(),
+        'latency': latency,
+      });
+    });
   }
 }
