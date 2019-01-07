@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:relay_simulator/documents_page.dart';
 import 'package:relay_simulator/global.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:relay_simulator/statistics_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -57,7 +58,8 @@ class _HomePageState extends State<HomePage> {
                       color: ThemeColors.primaryColor,
                     ),
                     title: Text('Received documents'),
-                    trailing: Container(alignment: Alignment.center,
+                    trailing: Container(
+                      alignment: Alignment.center,
                       width: _documentCount > 9 ? 24.0 : 18.0,
                       height: _documentCount > 9 ? 24.0 : 18.0,
                       decoration: BoxDecoration(
@@ -90,7 +92,11 @@ class _HomePageState extends State<HomePage> {
                       color: ThemeColors.primaryColor,
                     ),
                     title: Text('Statistics'),
-                    onTap: () {}),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              StatisticsPage(snapshot.data.documents)));
+                    }),
               ),
             ),
             //Card no.3 upload to cloud.
